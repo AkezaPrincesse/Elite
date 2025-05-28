@@ -6,7 +6,7 @@ import java.util.List;
 public interface PropertyService {
     List<Property> findAll();
     Property findById(Long id);
-    void save(Property property);
+    Property save(Property property);
     void deleteById(Long id);
     List<Property> findByOwnerUsername(String username);
 

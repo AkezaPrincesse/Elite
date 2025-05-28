@@ -1,13 +1,13 @@
 package com.example.elite.services;
 
+import com.example.elite.dto.RegisterRequest;
 import com.example.elite.models.Role;
 import com.example.elite.models.User;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.elite.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,44 +15,76 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
-    public void save(User user) {
+    @Override
+    public User save(User user) {
+        return userRepository.save(user);
     }
-    public User register(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+    @Override
+    public User register(RegisterRequest request) {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.TENANT);
+        user.setEnabled(true); // Enable user by default
         return userRepository.save(user);
     }
 
     @Override
     public List<User> findAll() {
-        return List.of();
+        return userRepository.findAll();
     }
 
     @Override
     public User findById(Long id) {
-        return null;
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
     public void deleteById(Long id) {
-
+        userRepository.deleteById(id);
     }
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new InMemoryUserDetailsManager(
-                org.springframework.security.core.userdetails.User.withUsername("tenant@example.com").password("{noop}password").roles("TENANT").build(),
-                org.springframework.security.core.userdetails.User.withUsername("admin@example.com").password("{noop}admin").roles("ADMIN").build()
-        );
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public void changePassword(String username, String currentPassword, String newPassword) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new BadCredentialsException("Current password is incorrect");
+        }
+
+        if (currentPassword.equals(newPassword)) {
+            throw new IllegalArgumentException("New password must be different from current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

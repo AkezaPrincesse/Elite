@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LeaseServiceImpl implements LeaseService {
@@ -41,7 +42,7 @@ public class LeaseServiceImpl implements LeaseService {
 
     @Override
     public List<Lease> findByTenant(String username) {
-        User tenant = userRepository.findByUsername(username);
+        Optional<User> tenant = userRepository.findByUsername(username);
         return leaseRepository.findByTenant(tenant);
     }
 }

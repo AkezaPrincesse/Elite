@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"

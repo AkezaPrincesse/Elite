@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PropertyServiceImpl implements PropertyService {
@@ -29,8 +30,9 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public void save(Property property) {
+    public Property save(Property property) {
         propertyRepository.save(property);
+        return property;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public List<Property> findByTenant(String username) {
-        User tenant = userRepository.findByUsername(username);
+        Optional<User> tenant = userRepository.findByUsername(username);
         return propertyRepository.findByTenant(tenant);
     }
 }

@@ -9,41 +9,97 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { toast } from "@/components/ui/use-toast"
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [role, setRole] = useState("tenant")
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    role: "tenant"
+  })
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }))
+  }
+
+  const handleRoleChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      role: value
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError("")
 
     try {
-      const response = await fetch("http://localhost:8095/login", {
+      // First authenticate with Spring Security
+      const authResponse = await fetch("http://localhost:8095/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        credentials: "include", // crucial to save session cookies
+        credentials: "include",
         body: new URLSearchParams({
-          username: email,
-          password: password,
+          username: formData.username,
+          password: formData.password
         }).toString(),
       })
 
-      if (response.ok) {
-        localStorage.setItem("userRole", role)
-        router.push("/dashboard")
-      } else {
-        setError("Invalid credentials. Please try again.")
+      if (!authResponse.ok) {
+        throw new Error("Authentication failed")
       }
-    } catch (err) {
-      setError("Failed to connect to server.")
+
+      // Then get user details from your API
+      const userResponse = await fetch("http://localhost:8095/api/users/me", {
+        credentials: "include"
+      })
+
+      if (!userResponse.ok) {
+        throw new Error("Failed to fetch user details")
+      }
+
+      const userData = await userResponse.json()
+
+      // Store minimal user data in localStorage
+      localStorage.setItem("userRole", formData.role)
+      localStorage.setItem("userData", JSON.stringify({
+        id: userData.id,
+        name: userData.name,
+        email: userData.email
+      }))
+
+      toast({
+        title: "Login successful",
+        description: `Welcome back, ${userData.name || formData.username}!`,
+      })
+
+      // Redirect based on role
+      switch(formData.role) {
+        case "admin":
+          router.push("/admin/dashboard")
+          break
+        case "agent":
+          router.push("/agent/dashboard")
+          break
+        default:
+          router.push("/dashboard")
+      }
+
+    } catch (error: any) {
+      console.error("Login error:", error)
+      toast({
+        title: "Login failed",
+        description: error.message || "Invalid credentials or server error",
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -56,21 +112,23 @@ export default function LoginPage() {
             <div className="flex items-center justify-center mb-2">
               <Building2 className="h-10 w-10 text-primary" />
             </div>
-            <CardTitle className="text-2xl text-center">Real Estate Management System</CardTitle>
-            <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
+            <CardTitle className="text-2xl text-center">EstateElite</CardTitle>
+            <CardDescription className="text-center">
+              Enter your credentials to access your account
+            </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
-              {error && <p className="text-red-500 text-sm">{error}</p>}
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Email</Label>
                 <Input
-                    id="email"
+                    id="username"
                     type="email"
                     placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={formData.username}
+                    onChange={handleChange}
                     required
+                    autoComplete="username"
                 />
               </div>
               <div className="space-y-2">
@@ -78,14 +136,15 @@ export default function LoginPage() {
                 <Input
                     id="password"
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={formData.password}
+                    onChange={handleChange}
                     required
+                    autoComplete="current-password"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role">Login as</Label>
-                <Select value={role} onValueChange={setRole}>
+                <Select value={formData.role} onValueChange={handleRoleChange}>
                   <SelectTrigger id="role">
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
@@ -95,22 +154,27 @@ export default function LoginPage() {
                     <SelectItem value="tenant">Tenant</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground mt-1">
-                  For demo purposes only. In production, role would be determined by your account.
-                </p>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col">
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign in"}
+                {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Signing in...
+                    </>
+                ) : "Sign in"}
               </Button>
               <div className="mt-4 text-center text-sm">
-                <Link href="/forgot-password/page.tsx" className="text-primary hover:underline">
+                <Link href="/forgot-password" className="text-primary hover:underline">
                   Forgot password?
                 </Link>
-                <p>
-                  Don’t have an account?{" "}
-                  <Link href="/register" className="text-primary hover:underline">
+                <p className="mt-4 text-center text-sm">
+                  Don't have an account?{" "}
+                  <Link href="/signup" className="text-primary hover:underline">
                     Sign up
                   </Link>
                 </p>

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -45,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> findByTenant(String username) {
-        User tenant = userRepository.findByUsername(username);
+        Optional<User> tenant = userRepository.findByUsername(username);
         return paymentRepository.findByTenant(tenant);
     }
 }

@@ -19,16 +19,7 @@ public class EliteApplication {
 	@Bean
 	CommandLineRunner createDefaultUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
-			if (!userRepository.existsByEmail("akezaprincesse@example.com")) {
-				User user = new User();
-				user.setUsername("admin123");
-				user.setEmail("akezaprincesse@gmail.com");
-				user.setPassword(passwordEncoder.encode("Admin123")); // Use a real password string
-				user.setRole(Role.ADMIN);
 
-				userRepository.save(user);
-				System.out.println("User created successfully.");
-			}
 		};
 	}
 

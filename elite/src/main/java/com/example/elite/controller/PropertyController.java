@@ -1,6 +1,10 @@
 package com.example.elite.controller;
 
 import com.example.elite.models.Property;
+import com.example.elite.repository.PropertyRepository;
+import com.example.elite.services.PropertyService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.elite.services.PropertyServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,50 +14,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/properties")
+@RestController
+@RequestMapping("/api/properties")
 public class PropertyController {
 
-    @Autowired
-    private PropertyServiceImpl propertyService;
+    private final PropertyRepository propertyRepository;
+
+    public PropertyController(PropertyRepository propertyRepository) {
+        this.propertyRepository = propertyRepository;
+    }
 
     @GetMapping
-    public String listProperties(Model model) {
-        List<Property> properties = propertyService.findAll();
-        model.addAttribute("properties", properties);
-        return "property/list";
+    public ResponseEntity<List<Property>> getAllProperties() {
+        return ResponseEntity.ok(propertyRepository.findAll());
     }
 
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        model.addAttribute("property", new Property());
-        return "property/add";
-    }
-
-    @PostMapping("/save")
-    public String saveProperty(@ModelAttribute Property property, RedirectAttributes redirectAttributes) {
-        propertyService.save(property);
-        redirectAttributes.addFlashAttribute("message", "Property saved successfully!");
-        return "redirect:/properties";
-    }
-
-
-    @GetMapping("/edit/{id}")
-    public String editProperty(@PathVariable Long id, Model model) {
-        Property property = propertyService.findById(id);
-        model.addAttribute("property", property);
-        return "property/edit";
-    }
-
-    @PostMapping("/update")
-    public String updateProperty(@ModelAttribute Property property) {
-        propertyService.save(property);
-        return "redirect:/properties";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String deleteProperty(@PathVariable Long id) {
-        propertyService.deleteById(id);
-        return "redirect:/properties";
+    @PostMapping
+    public ResponseEntity<Property> createProperty(@RequestBody Property property) {
+        Property savedProperty = propertyRepository.save(property);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProperty);
     }
 }

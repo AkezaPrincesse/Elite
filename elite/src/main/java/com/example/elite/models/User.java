@@ -1,7 +1,14 @@
 package com.example.elite.models;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Set;
+
+import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.enabled;
 
 @Entity
 @Table(name = "users")
@@ -26,6 +33,14 @@ public class User {
 
     @OneToMany(mappedBy = "tenant")
     private Set<Payment> payments;
+
+    private boolean enabled;
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Return a list of authorities for the user
+        // For example:
+        return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
+    }
 
     public User() {
     }
@@ -103,5 +118,13 @@ public class User {
 
     public void setPayments(Set<Payment> payments) {
         this.payments = payments;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

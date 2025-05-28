@@ -109,11 +109,11 @@ export default function MyLeasePage() {
               </div>
               <div>
                 <div className="text-sm font-medium text-muted-foreground">Start Date</div>
-                <div>January 1, 2023</div>
+                <div>January 1, 2025</div>
               </div>
               <div>
                 <div className="text-sm font-medium text-muted-foreground">End Date</div>
-                <div>December 31, 2023</div>
+                <div>December 31, 2025</div>
               </div>
               <div>
                 <div className="text-sm font-medium text-muted-foreground">Monthly Rent</div>
@@ -139,7 +139,7 @@ export default function MyLeasePage() {
                 <Clock className="h-5 w-5 text-amber-500" />
                 <div>
                   <span className="font-medium">Renewal Notice:</span> Your lease expires in 245 days. Please provide
-                  notice of your intent to renew or vacate by November 1, 2023.
+                  notice of your intent to renew or vacate by November 1, 2025.
                 </div>
               </div>
             </div>
@@ -175,8 +175,8 @@ export default function MyLeasePage() {
               <h4 className="font-medium">Next Payment</h4>
               <div className="mt-2 flex items-center justify-between rounded-md border p-3">
                 <div>
-                  <div className="font-medium">June 2023 Rent</div>
-                  <div className="text-sm text-muted-foreground">Due on June 1, 2023</div>
+                  <div className="font-medium">June 2025 Rent</div>
+                  <div className="text-sm text-muted-foreground">Due on June 1, 2025</div>
                 </div>
                 <div className="text-right">
                   <div className="font-medium">$1,200.00</div>
@@ -219,7 +219,7 @@ export default function MyLeasePage() {
               <div>
                 <h4 className="font-medium">1. Term</h4>
                 <p className="text-sm">
-                  The initial term of this Lease begins on January 1, 2023, and ends on December 31, 2023. This Lease
+                  The initial term of this Lease begins on January 1, 2025, and ends on December 31, 2023. This Lease
                   automatically terminates at the end of the term unless renewed in writing.
                 </p>
               </div>
@@ -290,8 +290,8 @@ export default function MyLeasePage() {
                 <div className="rounded-md border p-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-medium">May 2023 Rent</h4>
-                      <p className="text-sm text-muted-foreground">Due: May 1, 2023 | Paid: May 1, 2023</p>
+                      <h4 className="font-medium">May 2025 Rent</h4>
+                      <p className="text-sm text-muted-foreground">Due: May 15, 2025 | Paid: May 1, 2025</p>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">$1,200.00</div>
@@ -310,8 +310,8 @@ export default function MyLeasePage() {
                 <div className="rounded-md border p-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-medium">April 2023 Rent</h4>
-                      <p className="text-sm text-muted-foreground">Due: April 1, 2023 | Paid: April 1, 2023</p>
+                      <h4 className="font-medium">April 2025 Rent</h4>
+                      <p className="text-sm text-muted-foreground">Due: April 1, 2025 | Paid: April 1, 2025</p>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">$1,200.00</div>
@@ -330,8 +330,8 @@ export default function MyLeasePage() {
                 <div className="rounded-md border p-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-medium">March 2023 Rent</h4>
-                      <p className="text-sm text-muted-foreground">Due: March 1, 2023 | Paid: March 1, 2023</p>
+                      <h4 className="font-medium">March 2025 Rent</h4>
+                      <p className="text-sm text-muted-foreground">Due: March 1, 2025 | Paid: March 1, 2025</p>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">$1,200.00</div>
@@ -350,8 +350,8 @@ export default function MyLeasePage() {
                 <div className="rounded-md border p-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-medium">February 2023 Rent</h4>
-                      <p className="text-sm text-muted-foreground">Due: February 1, 2023 | Paid: February 1, 2023</p>
+                      <h4 className="font-medium">February 2025 Rent</h4>
+                      <p className="text-sm text-muted-foreground">Due: February 1, 2025 | Paid: February 1, 2025</p>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">$1,200.00</div>
@@ -370,8 +370,8 @@ export default function MyLeasePage() {
                 <div className="rounded-md border p-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-medium">January 2023 Rent</h4>
-                      <p className="text-sm text-muted-foreground">Due: January 1, 2023 | Paid: January 1, 2023</p>
+                      <h4 className="font-medium">January 2025 Rent</h4>
+                      <p className="text-sm text-muted-foreground">Due: January 1, 2025 | Paid: January 1, 2025</p>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">$1,200.00</div>
@@ -407,7 +407,7 @@ export default function MyLeasePage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h4 className="font-medium">Pet Addendum</h4>
-                      <p className="text-sm text-muted-foreground">Added: January 1, 2023</p>
+                      <p className="text-sm text-muted-foreground">Added: January 1, 2025</p>
                     </div>
                     <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
                       Active
@@ -427,7 +427,7 @@ export default function MyLeasePage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h4 className="font-medium">Parking Addendum</h4>
-                      <p className="text-sm text-muted-foreground">Added: January 1, 2023</p>
+                      <p className="text-sm text-muted-foreground">Added: January 1, 2025</p>
                     </div>
                     <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
                       Active
@@ -446,7 +446,7 @@ export default function MyLeasePage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h4 className="font-medium">Community Rules Addendum</h4>
-                      <p className="text-sm text-muted-foreground">Added: January 1, 2023</p>
+                      <p className="text-sm text-muted-foreground">Added: January 1, 2025</p>
                     </div>
                     <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
                       Active
