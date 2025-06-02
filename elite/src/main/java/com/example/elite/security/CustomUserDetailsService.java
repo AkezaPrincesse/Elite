@@ -2,6 +2,7 @@ package com.example.elite.security;
 
 import com.example.elite.models.User;
 import com.example.elite.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,6 +10,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+
+    @PostConstruct
+    public void init() {
+        System.out.println("CUSD bean created at " + new java.util.Date());
+    }
 
     private final UserRepository userRepository;
 
@@ -18,13 +24,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        User user = (User) userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+        User user = userRepository.findByUsernameOrEmail(usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getAuthorities() // make sure `User` implements `UserDetails` or returns authorities
-        );
+        return user; // User already implements UserDetails
     }
 }

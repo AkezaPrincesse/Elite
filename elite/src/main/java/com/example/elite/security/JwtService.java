@@ -4,6 +4,7 @@ import com.example.elite.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,11 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+
+    @PostConstruct
+    public void init() {
+        System.out.println("JwtService bean created at " + new java.util.Date());
+    }
 
     private final String SECRET_KEY = "your_secret_key_here"; // Ideally stored securely
 

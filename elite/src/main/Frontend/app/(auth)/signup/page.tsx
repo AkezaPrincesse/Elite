@@ -67,33 +67,27 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      // @ts-ignore
-      const response = await register({
+      await register({
         username: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         password: formData.password,
         role: formData.role,
       });
-// Temporary workaround; remove once register type is updated
 
-      if (response.ok) {
-        toast({
-          title: "Account created successfully",
-          description: "You can now sign in with your credentials",
-        })
-        router.push("/login")
-      } else {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Registration failed")
-      }
+      toast({
+        title: "Account created successfully",
+        description: "You can now sign in with your credentials",
+      });
+
+      router.push("/login");
     } catch (error: any) {
       toast({
         title: "Registration failed",
         description: error.message,
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 

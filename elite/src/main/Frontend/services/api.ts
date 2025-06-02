@@ -1,6 +1,5 @@
 import { toast } from "@/components/ui/use-toast";
 const API_BASE_URL = 'http://localhost:8095/api';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8095"
 
 export const checkUsernameAvailability = async (username: string) => {
     const response = await fetch(`${API_BASE_URL}/auth/check-username/${username}`);
@@ -14,7 +13,7 @@ export const register = async (userData: {
     role: string
 }) => {
     try {
-        const response = await fetch(`${API_URL}/api/auth/register`, {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -38,29 +37,38 @@ export const register = async (userData: {
     }
 }
 
-export const login = async (data: { username: string; password: string }) => {
-    const response = await fetch("http://localhost:8095/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        credentials: "include",
-        body: new URLSearchParams({
-            username: data.username,
-            password: data.password,
-        }).toString(),
-    });
+export const login = async (data: { email: string; password: string }) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
 
-    return response;
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Login failed");
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        toast({
+            title: "Login error",
+            description: error.message,
+            variant: "destructive",
+        });
+        throw error;
+    }
 };
 
 export const logout = async () => {
-    const response = await fetch("http://localhost:8095/logout", {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        credentials: "include",
     });
 
     return response;
@@ -68,7 +76,9 @@ export const logout = async () => {
 
 export const getUserProfile = async (username: string) => {
     const response = await fetch(`${API_BASE_URL}/users/profile/${username}`, {
-        credentials: 'include',
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem('accessToken')}`,
+        },
     });
     return await response.json();
 };
@@ -78,9 +88,9 @@ export const updateUserProfile = async (userData: any) => {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            "Authorization": `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify(userData),
-        credentials: 'include',
     });
     return await response.json();
 };

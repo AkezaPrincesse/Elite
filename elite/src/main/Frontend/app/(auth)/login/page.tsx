@@ -14,7 +14,7 @@ import { toast } from "@/components/ui/use-toast"
 export default function LoginPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
     role: "tenant"
   })
@@ -40,68 +40,60 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      // First authenticate with Spring Security
-      const authResponse = await fetch("http://localhost:8095/api/auth/login", {
+      const response = await fetch("http://localhost:8095/api/auth/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
-        credentials: "include",
-        body: new URLSearchParams({
-          username: formData.username,
+        body: JSON.stringify({
+          email: formData.email,
           password: formData.password
-        }).toString(),
-      })
+        })
+      });
 
-      if (!authResponse.ok) {
-        throw new Error("Authentication failed")
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Authentication failed");
       }
 
-      // Then get user details from your API
-      const userResponse = await fetch("http://localhost:8095/api/users/me", {
-        credentials: "include"
-      })
+      const data = await response.json();
 
-      if (!userResponse.ok) {
-        throw new Error("Failed to fetch user details")
+      // Store the tokens
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("userRole", formData.role);
+
+      // Store user data
+      if (data.user) {
+        localStorage.setItem("userData", JSON.stringify(data.user));
       }
-
-      const userData = await userResponse.json()
-
-      // Store minimal user data in localStorage
-      localStorage.setItem("userRole", formData.role)
-      localStorage.setItem("userData", JSON.stringify({
-        id: userData.id,
-        name: userData.name,
-        email: userData.email
-      }))
 
       toast({
         title: "Login successful",
-        description: `Welcome back, ${userData.name || formData.username}!`,
-      })
+        description: `Welcome back, ${data.user?.name || formData.email}!`,
+      });
 
       // Redirect based on role
       switch(formData.role) {
         case "admin":
-          router.push("/admin/dashboard")
-          break
+          router.push("/admin/dashboard");
+          break;
         case "agent":
-          router.push("/agent/dashboard")
-          break
+          router.push("/agent/dashboard");
+          break;
         default:
-          router.push("/dashboard")
+          router.push("/dashboard");
       }
 
     } catch (error: any) {
-      console.error("Login error:", error)
+      console.error("Login error:", error);
       toast({
         title: "Login failed",
         description: error.message || "Invalid credentials or server error",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -120,15 +112,15 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Email</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                    id="username"
+                    id="email"
                     type="email"
                     placeholder="name@example.com"
-                    value={formData.username}
+                    value={formData.email}
                     onChange={handleChange}
                     required
-                    autoComplete="username"
+                    autoComplete="email"
                 />
               </div>
               <div className="space-y-2">

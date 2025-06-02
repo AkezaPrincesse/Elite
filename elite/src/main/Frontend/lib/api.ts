@@ -9,6 +9,7 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
         },
     });
 
+
     if (!res.ok) {
         throw new Error(`API error: ${res.status}`);
     }

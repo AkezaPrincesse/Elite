@@ -22,9 +22,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loadUser();
     }, []);
 
-    const signIn = async (credentials: { username: string; password: string }) => {
+    const signIn = async (credentials: { email: string; password: string }) => {
         const response = await login(credentials);
         if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem("accessToken", data.accessToken);
+            localStorage.setItem("refreshToken", data.refreshToken);
             const userData = await getUserProfile();
             setUser(userData);
         }
@@ -33,6 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const signOut = async () => {
         await logout();
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         setUser(null);
     };
 

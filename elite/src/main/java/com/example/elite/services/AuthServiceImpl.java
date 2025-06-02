@@ -38,6 +38,11 @@ public class AuthServiceImpl implements AuthService {  // Removed <OAuth2AccessT
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole() != null ? request.getRole() : com.example.elite.models.Role.TENANT);
+        user.setEnabled(true);
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
+        user.setCredentialsNonExpired(true);
 
         userRepository.save(user);
 
@@ -46,7 +51,7 @@ public class AuthServiceImpl implements AuthService {  // Removed <OAuth2AccessT
         String refreshToken = jwtService.generateRefreshToken(user);
 
         return AuthResponse.builder()
-                .accessToken(accessToken)  // Now using String
+                .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .user(UserDto.fromUser(user))
                 .build();
@@ -58,13 +63,13 @@ public class AuthServiceImpl implements AuthService {  // Removed <OAuth2AccessT
             // Authenticate user
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
+                            request.getEmail(),
                             request.getPassword()
                     )
             );
 
             // Get user details
-            User user = userRepository.findByUsername(request.getUsername())
+            User user = userRepository.findUserByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             // Generate tokens
@@ -72,7 +77,7 @@ public class AuthServiceImpl implements AuthService {  // Removed <OAuth2AccessT
             String refreshToken = jwtService.generateRefreshToken(user);
 
             return AuthResponse.builder()
-                    .accessToken(accessToken)  // Now using String
+                    .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .user(UserDto.fromUser(user))
                     .build();

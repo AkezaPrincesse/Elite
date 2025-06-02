@@ -41,8 +41,8 @@ public class UserServiceImpl implements UserService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.TENANT);
-        user.setEnabled(true); // Enable user by default
+        user.setRole(request.getRole());  // Convert string to Role enum
+        user.setEnabled(true);
         return userRepository.save(user);
     }
 
