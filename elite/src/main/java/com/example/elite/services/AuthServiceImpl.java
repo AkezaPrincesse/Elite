@@ -68,8 +68,8 @@ public class AuthServiceImpl implements AuthService {  // Removed <OAuth2AccessT
                     )
             );
 
-            // Get user details
-            User user = userRepository.findUserByEmail(request.getEmail())
+            // Get user details using the same method as CustomUserDetailsService
+            User user = userRepository.findByUsernameOrEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             // Generate tokens
@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {  // Removed <OAuth2AccessT
                     .user(UserDto.fromUser(user))
                     .build();
         } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
+            throw new BadCredentialsException("Invalid email or password");
         }
     }
 

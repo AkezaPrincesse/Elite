@@ -42,12 +42,14 @@ export default function LoginPage() {
     try {
       const response = await fetch("http://localhost:8095/api/auth/login", {
         method: "POST",
+        credentials: "include", // Important for cookies
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          role: formData.role
         })
       });
 
@@ -61,7 +63,6 @@ export default function LoginPage() {
       // Store the tokens
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("userRole", formData.role);
 
       // Store user data
       if (data.user) {
@@ -70,20 +71,11 @@ export default function LoginPage() {
 
       toast({
         title: "Login successful",
-        description: `Welcome back, ${data.user?.name || formData.email}!`,
+        description: `Welcome back, ${data.user?.username || formData.email}!`,
       });
 
-      // Redirect based on role
-      switch(formData.role) {
-        case "admin":
-          router.push("/admin/dashboard");
-          break;
-        case "agent":
-          router.push("/agent/dashboard");
-          break;
-        default:
-          router.push("/dashboard");
-      }
+      // Force full page reload to establish session
+      window.location.href = "/dashboard";
 
     } catch (error: any) {
       console.error("Login error:", error);
